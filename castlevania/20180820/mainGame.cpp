@@ -101,7 +101,7 @@ HRESULT mainGame::init()
 	SCENEMANAGER->addScene("EndingScene", m_pEndingScene);
 
 
-	SCENEMANAGER->changeScene("titleScene");
+	SCENEMANAGER->changeScene("battle");
 	
 
 	m_phallwayRoom3->setBattleSceen(m_pBattleScene);

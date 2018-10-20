@@ -1207,12 +1207,12 @@ void enemy::lizardManUpdate()
 
 
 			}
-			if (m_pPlayer->getPlayerAttack() || m_pPlayer->getPlayerJumpAttack() || m_pPlayer->getPlayerDownAt())
-			{
-				m_mStatus.curDef = 99999999;
-				m_mStatus.state = MonsterStatus::DEFENSE;
-				m_fElapsedTime = 0;
-			}
+			//if (m_pPlayer->getPlayerAttack() || m_pPlayer->getPlayerJumpAttack() || m_pPlayer->getPlayerDownAt())
+			//{
+			//	m_mStatus.curDef = 99999999;
+			//	m_mStatus.state = MonsterStatus::DEFENSE;
+			//	m_fElapsedTime = 0;
+			//}
 			
 
 			if (!(WINSIZEX > m_fMapX && m_fMapX > 0 && WINSIZEY > m_fMapY &&m_fMapY > 0))

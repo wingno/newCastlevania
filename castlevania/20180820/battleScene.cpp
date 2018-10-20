@@ -46,8 +46,8 @@ void battleScene::release()
 void battleScene::update()
 {
 
-	m_pPlayer->update();
 	ROOMMANAGER->update();
+	m_pPlayer->update();
 	m_progressBar->setGauge(m_pPlayer->getState().curHP, m_pPlayer->getState().fullHP
 		, m_pPlayer->getState().curMP, m_pPlayer->getState().fullMP);
 	
@@ -57,10 +57,7 @@ void battleScene::update()
 
 	}
 
-	if (m_pPlayer->getPlayerDie() == 1)
-	{
-		m_bPlayerDieChangeScene = true;
-	}
+
 
 	if (m_bPlayerDieChangeScene)
 	{

@@ -155,7 +155,7 @@ void menuScene::update()
 		}
 		else
 		{
-			m_pPlayer->setIsJump(false);
+			//m_pPlayer->setIsJump(false);
 			SCENEMANAGER->changeScene("battle");
 		}
 

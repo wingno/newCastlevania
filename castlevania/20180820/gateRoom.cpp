@@ -230,28 +230,6 @@ void gateRoom::rectColider()
 	}
 
 
-
-
-	for (int i = 0; i < 6; i++)
-	{
-		if (m_rectObj[i].top + 13 > m_pPlayer->getRc().bottom && m_rectObj[i].top - 7 < m_pPlayer->getRc().bottom
-			&& (m_pPlayer->getRc().right > m_rectObj[i].left && m_pPlayer->getRc().left < m_rectObj[i].right))
-		{
-
-			m_pPlayer->setFY(m_rectObj[i].top - 50);
-
-
-			//맵에걸릴경우 내려가는거 임시방편 나중에 수정해야함 !!!
-			if(m_rectObj[i].top - 50)
-			{
-				if (KEYMANAGER->isOnceKeyDown('C'))
-				{
-					m_pPlayer->setFY(m_rectObj[i].top-10);
-				}
-			}
-
-		}
-	}
 }
 
 void gateRoom::checkCollision()
