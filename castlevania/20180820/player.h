@@ -1,5 +1,7 @@
 #pragma once
 
+#define GRAVITY 12
+#define MOVE_SPEED 8
 
 class bulletSoul;
 class guardianSoul;
@@ -14,7 +16,24 @@ class ItemUse;
 class player
 {
 private:
+	enum PlayerState
+	{
+		IDLE,
+		ATTACK,
+		SKILL_READY,
+		MOVE,
+		HIT,
+		SHEET,
+		SHEET_ATTACK,
+		SLIDE,
+		JUMP,
+		FALL,
+		JUMPJUMP,
+		JUMPATTACK,
+		JUMPSATTACK,
+		JUMPHIT
 
+	};
 
 	struct itemInven
 	{
@@ -54,6 +73,12 @@ private:
 	image *  m_pCImg;
 
 
+	animation* m_aniIdle;
+	animation* m_aniLIdle;
+
+	animation*	m_aniMove;
+	animation*	m_aniLMove;
+
 	
 	// 플레이어 렉트
 	SYNTHESIZE (RECT, m_rc, Rc);
@@ -81,11 +106,11 @@ private:
 	// 플레이어 프레임설정 속성
 
 
-	float	m_fGravity;
+
 
 	// 플레이어가 보고 있는 방향 속성
 	bool	m_bPlayerSee;
-
+	bool	m_bIsSheetDown;
 
 
 
@@ -94,6 +119,8 @@ private:
 	SYNTHESIZE(bool, m_yCameraOn, YCameraOn);
 
 	int			m_nSwordAngle;
+
+	PlayerState	m_PlayerState;
 
 	soulInven	m_soulInven;
 	SoulSet		m_soulSet;
@@ -109,7 +136,10 @@ private:
 
 	//내가 만든 캐릭터
 
-	float m_fDamageY;
+	float	m_fDamageY;
+
+	bool	m_bIsGround;
+	bool	m_bIsControll;
 
 
 
@@ -134,6 +164,10 @@ public:
 	void ShowDamage();
 
 	void PlayerRect();
+
+	void controller();
+
+	void aniInit();
 
 
 

@@ -120,15 +120,7 @@ void animation::setPlayFrame(int start, int end, bool reverse, bool loop)
 	{
 		if (reverse)
 		{
-			// 정->
-			for (int i = start; i < m_nFrameNum; i++)
-			{
-				m_vecPlayList.push_back(i);
-			}
-			for (int i = 0; i < end; i++)
-			{
-				m_vecPlayList.push_back(i);
-			}
+
 
 			// 역 <-
 			for (int i = end - 1; i >= 0; i--)
@@ -158,10 +150,7 @@ void animation::setPlayFrame(int start, int end, bool reverse, bool loop)
 		// 정 -> 역 <- 애니메이션
 		if (reverse)
 		{
-			for (int i = start; i < end; i++)
-			{
-				m_vecPlayList.push_back(i);
-			}
+
 
 			for (int i = end - 1; i >= start; i--)
 			{

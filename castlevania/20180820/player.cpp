@@ -8,7 +8,7 @@
 #include "bodyItem.h"
 #include "accessoryItem.h"
 #include "ItemUse.h"
-
+#include "animation.h"
 
 HRESULT player::init()
 {
@@ -66,6 +66,8 @@ HRESULT player::init()
 
 	m_xCameraOn = false;
 	m_yCameraOn = false;
+
+	m_bIsControll = true;
 
 
 	bulletSoul* baseBSoul = new bulletSoul;
@@ -192,7 +194,12 @@ HRESULT player::init()
 
 	m_nHitDmg = 0;
 
+	m_PlayerState = FALL;
 
+	m_bIsGround = false;
+
+
+	aniInit();
 
 	return S_OK;
 }
@@ -248,36 +255,176 @@ void player::release()
 		delete (m_ItemInven.vecItemUse[i]);
 	}
 	m_ItemInven.vecItemUse.clear();
-
-
-
-
-
-
-
-
-
-
 }
 
 void player::update()
 {
 
-	m_fY += 10;
-	mapMove();
+	m_fY += GRAVITY;
+
+	
+
+	switch (m_PlayerState)
+	{	
+	case player::IDLE:
+		m_aniIdle->frameUpdate(TIMEMANAGER->getElapsedTime());
+		m_aniLIdle->frameUpdate(TIMEMANAGER->getElapsedTime());
+		if (m_bPlayerSee)
+		{
+			if(!m_aniIdle->getIsPlaying())
+				m_aniIdle->start();
+			m_aniLIdle->stop();
+		}
+		else
+		{
+			if (!m_aniLIdle->getIsPlaying())
+			{
+				m_aniLIdle->start();
+			}
+			m_aniIdle->stop();
+		}
+
+
+
+
+		if (!m_bIsGround)
+		{
+			m_PlayerState = FALL;
+		}
+		break;
+	case player::ATTACK:
+		break;
+	case player::SKILL_READY:
+		break;
+	case player::MOVE:
+
+		m_aniMove->frameUpdate(TIMEMANAGER->getElapsedTime());
+		m_aniLMove->frameUpdate(TIMEMANAGER->getElapsedTime());
+		if (m_bPlayerSee)
+		{
+			if (!m_aniMove->getIsPlaying())
+				m_aniMove->start();
+			m_aniLMove->stop();
+
+			if (m_aniMove->getNowPlayFrame()==75)
+			{
+				m_aniMove->setNowPlayIdx(2);
+			}
+
+		}
+		else
+		{
+			if (!m_aniLMove->getIsPlaying())
+			{
+				m_aniLMove->start();
+			}
+			m_aniMove->stop();
+
+			if (m_aniLMove->getNowPlayFrame() == 57)
+			{
+				m_aniLMove->setNowPlayIdx(2);
+			}
+		}
+
+
+		m_PlayerState = IDLE;
+
+		break;
+	case player::HIT:
+		break;
+	case player::SHEET:
+		break;
+	case player::SHEET_ATTACK:
+		break;
+	case player::SLIDE:
+		break;
+	case player::JUMP:
+		break;
+	case player::FALL:
+
+		if (m_bIsGround)
+		{
+			m_PlayerState = IDLE;
+		}
+		break;
+	case player::JUMPJUMP:
+		break;
+	case player::JUMPATTACK:
+		break;
+	case player::JUMPSATTACK:
+		break;
+	case player::JUMPHIT:
+		break;
+	default:
+		break;
+	}
+
+	controller();
+
 	PlayerRect();
 	mapchackCollision();
+	mapMove();
 
 }
 
 void player::render(HDC hdc)
 {
-	m_pImg->frameRender(hdc, m_fX- (m_pImg->getFrameWidth() * 3) / 2, m_fY- ((m_pImg->getFrameHeight() * 3) / 2), 0, 0, 3);
-
-
 	Rectangle(hdc, m_rc.left, m_rc.top, m_rc.right, m_rc.bottom);
 
 	Rectangle(hdc, m_fX, m_fY, m_rc.right, m_rc.bottom);
+
+
+	switch (m_PlayerState)
+	{
+	case player::IDLE:
+		if (m_bPlayerSee)
+		{
+			m_pImg->aniRender(hdc, m_fX - (m_pImg->getFrameWidth() * 3) / 2, m_fY - ((m_pImg->getFrameHeight() * 3) / 2) - 10, m_aniIdle, 3);
+		}
+		else
+		{
+			m_pImg2->aniRender(hdc, m_fX - (m_pImg->getFrameWidth() * 3) / 2, m_fY - ((m_pImg2->getFrameHeight() * 3) / 2) - 10, m_aniLIdle, 3);
+		}
+		break;
+	case player::ATTACK:
+		break;
+	case player::SKILL_READY:
+		break;
+	case player::MOVE:
+		if (m_bPlayerSee)
+		{
+			m_pImg->aniRender(hdc, m_fX - (m_pImg->getFrameWidth() * 3) / 2, m_fY - ((m_pImg->getFrameHeight() * 3) / 2) - 10, m_aniMove, 3);
+		}
+		else
+		{
+			m_pImg2->aniRender(hdc, m_fX - (m_pImg->getFrameWidth() * 3) / 2, m_fY - ((m_pImg2->getFrameHeight() * 3) / 2) - 10, m_aniLMove, 3);
+		}
+		break;
+	case player::HIT:
+		break;
+	case player::SHEET:
+		break;
+	case player::SHEET_ATTACK:
+		break;
+	case player::SLIDE:
+		break;
+	case player::JUMP:
+		break;
+	case player::FALL:
+		break;
+	case player::JUMPJUMP:
+		break;
+	case player::JUMPATTACK:
+		break;
+	case player::JUMPSATTACK:
+		break;
+	case player::JUMPHIT:
+		break;
+	default:
+		break;
+	}
+	//m_pImg->frameRender(hdc, m_fX- (m_pImg->getFrameWidth() * 3) / 2, m_fY- ((m_pImg->getFrameHeight() * 3) / 2) -10, 0, 0, 3);
+
 
 
 }
@@ -330,113 +477,14 @@ void player::mapMove()
 void player::mapchackCollision()
 {
 
-
-	//for (int y = m_rc.top; y <= m_rc.bottom; y++)
-	//{
-	//	COLORREF color = GetPixel(ROOMMANAGER->getCurrRoom()->getMemDCInfo()->hMemDC,
-	//		m_fX + ROOMMANAGER->getCurrRoom()->getPosMap().x,
-	//		y + ROOMMANAGER->getCurrRoom()->getPosMap().y);
-
-	//	int r = GetRValue(color);
-	//	int g = GetGValue(color);
-	//	int b = GetBValue(color);
-
-
-	//	if (!(r == 0 && g == 88 && b == 24))
-	//	{
-	//		if (y > m_fY)
-	//		{
-	//			m_fY--;
-	//		}
-	//		else if ((y < m_fY))
-	//		{
-	//			m_fY++;
-	//		}
-	//	}
-
-
-	//	if (y == m_rc.bottom)
-	//	{
-	//		y++;
-
-	//		color = GetPixel(ROOMMANAGER->getCurrRoom()->getMemDCInfo()->hMemDC,
-	//			m_fX + ROOMMANAGER->getCurrRoom()->getPosMap().x,
-	//			y + ROOMMANAGER->getCurrRoom()->getPosMap().y);
-
-	//		r = GetRValue(color);
-	//		g = GetGValue(color);
-	//		b = GetBValue(color);
-
-	//		if (!(r == 0 && g == 88 && b == 24))
-	//		{
-
-	//			m_fY -= m_fGravity;
-
-	//		}
-
-	//	}
-	//}
-
-	//for (int x = m_rc.left; x < m_rc.right; x++)
-	//{
-	//	COLORREF color = GetPixel(ROOMMANAGER->getCurrRoom()->getMemDCInfo()->hMemDC,
-	//		x + ROOMMANAGER->getCurrRoom()->getPosMap().x,
-	//		m_fY + ROOMMANAGER->getCurrRoom()->getPosMap().y);
-
-	//	int r = GetRValue(color);
-	//	int g = GetGValue(color);
-	//	int b = GetBValue(color);
-
-
-	//	if (!(r == 0 && g == 88 && b == 24))
-	//	{
-	//		if (x > m_fX)
-	//		{
-	//			m_fX--;
-	//		}
-	//		else if ((x < m_fX))
-	//		{
-	//			m_fX++;
-	//		}
-	//	}
-	//}
-
-	//for (int x = m_rc.left; x < m_rc.right; x++)
-	//{
-	//	COLORREF color = GetPixel(ROOMMANAGER->getCurrRoom()->getMemDCInfo()->hMemDC,
-	//		x + ROOMMANAGER->getCurrRoom()->getPosMap().x,
-	//		m_fY + ROOMMANAGER->getCurrRoom()->getPosMap().y);
-
-	//	int r = GetRValue(color);
-	//	int g = GetGValue(color);
-	//	int b = GetBValue(color);
-
-
-	//	if (!(r == 0 && g == 88 && b == 24))
-	//	{
-	//		if (x > (m_fMapX))
-	//		{
-	//			m_fX--;
-
-	//		}
-	//		else if ((x < m_fMapX))
-	//		{
-	//			m_fX++;
-	//		}
-	//	}
-	//}
-
-	//m_fMapX = m_fX - ROOMMANAGER->getCurrRoom()->getPosMap().x;
-	//m_fMapY = m_fY - ROOMMANAGER->getCurrRoom()->getPosMap().y;
-	//m_rc = RectMakeCenter(m_fMapX, m_fMapY, m_pImgLMotion->getFrameWidth(), (m_pImgLMotion->getFrameHeight() * 3) - 60);
-
-	int rectHarfHeight= (m_rc.bottom-m_rc.top)/2;
+   	int rectHarfHeight= (m_rc.bottom-m_rc.top)/2;
+	int rectHarfWidth = (m_rc.right - m_rc.left) / 2;
 
 	for (int y = 0; y <= rectHarfHeight; y++)
 	{
 		COLORREF color = GetPixel(ROOMMANAGER->getCurrRoom()->getMemDCInfo()->hMemDC,
 			m_fX + ROOMMANAGER->getCurrRoom()->getPosMap().x,
-			(m_rc.bottom-y) + ROOMMANAGER->getCurrRoom()->getPosMap().y);
+			(m_fY+y) + ROOMMANAGER->getCurrRoom()->getPosMap().y);
 
 		int r = GetRValue(color);
 		int g = GetGValue(color);
@@ -445,20 +493,76 @@ void player::mapchackCollision()
 
 		if (!(r == 0 && g == 88 && b == 24))
 		{
-			//if (y > m_fMapY+60)
-			//{
-			//	//if(m_fY>WINSIZEX/2)
-			//	m_fY= y- ((m_pImgLMotion->getFrameHeight() * 3) - 60)/2;
 
-			//	//m_rc = RectMakeCenter(m_fMapX, m_fMapY, m_pImgLMotion->getFrameWidth(), (m_pImgLMotion->getFrameHeight() * 3) - 60);
-			//}
-			//else if ((y < m_fMapY+60))
-			//{
-			//	//if (m_fY < WINSIZEX / 2)
-			//	m_fY++;
-			//}
-			//m_fY = (m_rc.bottom - y + rectHarfHeight) - ((m_pImg->getFrameHeight() * 3)/2);
-			m_fY = (m_rc.bottom - y + rectHarfHeight) - ((m_pImg->getFrameHeight() * 3) - 140) + ROOMMANAGER->getCurrRoom()->getPosMap().y;
+    		m_fY = (m_fY + y) - ((m_pImg->getFrameHeight() * 3) / 4);
+			PlayerRect();
+			m_bIsGround = true;
+			break;
+
+		}
+		else
+		{
+			m_bIsGround = false;
+		}
+
+
+		color = GetPixel(ROOMMANAGER->getCurrRoom()->getMemDCInfo()->hMemDC,
+		m_fX + ROOMMANAGER->getCurrRoom()->getPosMap().x,
+		(m_fY - y) + ROOMMANAGER->getCurrRoom()->getPosMap().y);
+
+		r = GetRValue(color);
+		g = GetGValue(color);
+		b = GetBValue(color);
+
+
+		if (!(r == 0 && g == 88 && b == 24))
+		{
+
+			m_fY = (m_fY - y) + ((m_pImg->getFrameHeight() * 3) / 4);
+			PlayerRect();
+
+			break;
+
+		}
+
+
+	}
+	for (int x = 0; x <= rectHarfWidth; x++)
+	{
+		COLORREF color = GetPixel(ROOMMANAGER->getCurrRoom()->getMemDCInfo()->hMemDC,
+			(m_fX +x) + ROOMMANAGER->getCurrRoom()->getPosMap().x,
+			(m_fY) + ROOMMANAGER->getCurrRoom()->getPosMap().y);
+
+		int r = GetRValue(color);
+		int g = GetGValue(color);
+		int b = GetBValue(color);
+
+
+		if (!(r == 0 && g == 88 && b == 24))
+		{
+
+			m_fX = (m_fX + x) - ((m_pImg->getFrameWidth() * 3) / 4);
+			PlayerRect();
+			break;
+
+		}
+
+
+		color = GetPixel(ROOMMANAGER->getCurrRoom()->getMemDCInfo()->hMemDC,
+			(m_fX - x) + ROOMMANAGER->getCurrRoom()->getPosMap().x,
+			(m_fY) + ROOMMANAGER->getCurrRoom()->getPosMap().y);
+
+		r = GetRValue(color);
+		g = GetGValue(color);
+		b = GetBValue(color);
+
+
+		if (!(r == 0 && g == 88 && b == 24))
+		{
+
+			m_fX = (m_fX - x) + ((m_pImg->getFrameWidth() * 3) / 4);
+			PlayerRect();
+
 			break;
 
 		}
@@ -485,6 +589,8 @@ void player::mapRectCollision()
 			{
 
 				m_fY = (ROOMMANAGER->getCurrRoom()->getRectObj()[i].top - 50);
+				m_bIsGround = true;
+				
 
 
 				if (KEYMANAGER->isOnceKeyDown('F'))
@@ -492,7 +598,11 @@ void player::mapRectCollision()
 					m_fY +=30;
 					PlayerRect();
 				}
-
+				break;
+			}
+			else
+			{
+				m_bIsGround = false;
 			}
 
 		
@@ -581,6 +691,68 @@ void player::PlayerRect()
 	m_rc = RectMakeCenter(m_fX, m_fY, (m_pImg->getFrameWidth() * 3) / 2, (m_pImg->getFrameHeight() * 3) / 2);
 	
 
+}
+
+void player::controller()
+{
+	if (m_bIsControll)
+	{
+		if (m_bIsGround)
+		{
+			if (KEYMANAGER->isStayKeyDown(VK_RIGHT))
+			{
+				m_fX += MOVE_SPEED;
+				m_PlayerState = MOVE;
+				m_bPlayerSee = true;
+			}
+			if (KEYMANAGER->isOnceKeyUp(VK_RIGHT))
+			{
+				m_aniMove->stop();
+			}
+			if (KEYMANAGER->isStayKeyDown(VK_LEFT))
+			{
+				m_fX -= MOVE_SPEED;
+				m_PlayerState = MOVE;
+				m_bPlayerSee = false;
+			}
+			if (KEYMANAGER->isOnceKeyUp(VK_LEFT))
+			{
+				m_aniLMove->stop();
+			}
+
+
+		}
+		else
+		{
+
+		}
+
+	}
+
+
+}
+
+void player::aniInit()
+{
+	m_aniIdle = new animation;
+	m_aniIdle->init(855, 741, 45, 57);
+	m_aniIdle->setPlayFrame(0, 4, false, true);
+	m_aniIdle->setFPS(5);
+
+	m_aniLIdle = new animation;
+	m_aniLIdle->init(855, 741, 45, 57);
+	m_aniLIdle->setPlayFrame(15, 19, true, true);
+	m_aniLIdle->setFPS(5);
+
+	m_aniMove = new animation;
+	m_aniMove->init(855, 741, 45, 57);
+	m_aniMove->setPlayFrame(57, 76, false, true);
+	m_aniMove->setFPS(10);
+
+	m_aniLMove = new animation;
+	m_aniLMove->init(855, 741, 45, 57);
+	m_aniLMove->setPlayFrame(57, 76, true, true);
+	m_aniLMove->setFPS(10);
 }
 
 void player::bossRectCollision(RECT collRc, int idx)
