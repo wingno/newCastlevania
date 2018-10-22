@@ -364,12 +364,34 @@ void player::update()
 
 		if (!m_bIsGround)
 		{
-			m_PlayerState = IDLE;
+			//m_PlayerState = IDLE;
 		}
 
 
 		break;
 	case player::FALL:
+		m_aniFall->frameUpdate(TIMEMANAGER->getElapsedTime());
+		m_aniLFall->frameUpdate(TIMEMANAGER->getElapsedTime());
+		if (m_bPlayerSee)
+		{
+			if (!m_aniFall->getIsPlaying())
+				m_aniFall->start();
+			m_aniLFall->stop();
+		}
+		else
+		{
+			if (!m_aniLFall->getIsPlaying())
+			{
+				m_aniLFall->start();
+			}
+			m_aniFall->stop();
+		}
+
+
+
+
+
+
 		if (m_bIsGround)
 		{
 			m_PlayerState = IDLE;
@@ -454,8 +476,25 @@ void player::render(HDC hdc)
 	case player::SLIDE:
 		break;
 	case player::JUMP:
+		if (m_bPlayerSee)
+		{
+			m_pImg->aniRender(hdc, m_fX - (m_pImg->getFrameWidth() * 3) / 2, m_fY - ((m_pImg->getFrameHeight() * 3) / 2) - 10, m_aniJump, 3);
+		}
+		else
+		{
+			m_pImg2->aniRender(hdc, m_fX - (m_pImg->getFrameWidth() * 3) / 2, m_fY - ((m_pImg2->getFrameHeight() * 3) / 2) - 10, m_aniLJump, 3);
+		}
+
 		break;
 	case player::FALL:
+		if (m_bPlayerSee)
+		{
+			m_pImg->aniRender(hdc, m_fX - (m_pImg->getFrameWidth() * 3) / 2, m_fY - ((m_pImg->getFrameHeight() * 3) / 2) - 10, m_aniFall, 3);
+		}
+		else
+		{
+			m_pImg2->aniRender(hdc, m_fX - (m_pImg->getFrameWidth() * 3) / 2, m_fY - ((m_pImg2->getFrameHeight() * 3) / 2) - 10, m_aniLFall, 3);
+		}
 		break;
 	case player::JUMPJUMP:
 		break;
@@ -521,7 +560,7 @@ void player::mapMove()
 
 void player::mapchackCollision()
 {
-
+	PlayerRect();
    	int rectHarfHeight= (m_rc.bottom-m_rc.top)/2;
 	int rectHarfWidth = (m_rc.right - m_rc.left) / 2;
 
@@ -769,7 +808,7 @@ void player::controller()
 			if (KEYMANAGER->isOnceKeyDown('Z'))
 			{
 				m_PlayerState = JUMP;
-				m_fY -= ((m_fMapY - m_nMaxJump) / 12) + GRAVITY;
+				m_fY -= (13) + GRAVITY;
 			}
 
 
@@ -778,11 +817,25 @@ void player::controller()
 		}
 		else
 		{
-			if (KEYMANAGER->isStayKeyDown('Z'))
+			//if (KEYMANAGER->isStayKeyDown('Z'))
 			{
-				if (m_fMapY > m_nMaxJump)
+				if (((m_fMapY - m_nMaxJump) / 4)> 10)
 				{
-					m_fY -= ((m_fMapY - m_nMaxJump) / 12)+GRAVITY;
+					if (m_PlayerState == JUMP || m_PlayerState == JUMPJUMP)
+					{
+						if ((m_fMapY - m_nMaxJump) > 13)
+						{
+							m_fY -= 13 + GRAVITY;
+						}
+						else
+						{
+							m_fY -= ((m_fMapY - m_nMaxJump) / 4)+GRAVITY;
+
+						}
+
+
+					}
+					
 				}
 				else
 				{
@@ -832,6 +885,16 @@ void player::aniInit()
 	m_aniLJump->init(855, 741, 45, 57);
 	m_aniLJump->setPlayFrame(130, 133, true, true);
 	m_aniLJump->setFPS(10);
+
+	m_aniFall = new animation;
+	m_aniFall->init(855, 741, 45, 57);
+	m_aniFall->setPlayFrame(121, 123, false, true);
+	m_aniFall->setFPS(10);
+
+	m_aniLFall = new animation;
+	m_aniLFall->init(855, 741, 45, 57);
+	m_aniLFall->setPlayFrame(122, 123, true, true);
+	m_aniLFall->setFPS(10);
 
 }
 

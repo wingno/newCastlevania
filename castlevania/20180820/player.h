@@ -81,6 +81,9 @@ private:
 
 	animation*	m_aniJump;
 	animation*	m_aniLJump;
+
+	animation*	m_aniFall;
+	animation*	m_aniLFall;
 	
 	// 플레이어 렉트
 	SYNTHESIZE (RECT, m_rc, Rc);
