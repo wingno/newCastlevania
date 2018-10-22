@@ -79,6 +79,8 @@ private:
 	animation*	m_aniMove;
 	animation*	m_aniLMove;
 
+	animation*	m_aniJump;
+	animation*	m_aniLJump;
 	
 	// 플레이어 렉트
 	SYNTHESIZE (RECT, m_rc, Rc);
@@ -101,6 +103,7 @@ private:
 	SYNTHESIZE( float, m_fX,Fx);
 	SYNTHESIZE(float, m_fY,FY);
 
+	
 
 
 	// 플레이어 프레임설정 속성
@@ -133,13 +136,24 @@ private:
 	SYNTHESIZE(bool, m_bIsRide, IsRide);
 	SYNTHESIZE(bool, m_bIsLide, IsLide);
 
+	float	m_fDamageY;
 
 	//내가 만든 캐릭터
 
-	float	m_fDamageY;
 
 	bool	m_bIsGround;
 	bool	m_bIsControll;
+
+
+	int		m_nMaxJump;
+	int		m_nMaxDoubleJump;
+
+	float	m_fMapX;
+	float	m_fMapY;
+
+	float	m_fJumpPower;
+	
+
 
 
 

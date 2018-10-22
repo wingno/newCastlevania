@@ -329,6 +329,11 @@ void player::update()
 
 		m_PlayerState = IDLE;
 
+		if (!m_bIsGround)
+		{
+			m_PlayerState = FALL;
+		}
+
 		break;
 	case player::HIT:
 		break;
@@ -339,13 +344,38 @@ void player::update()
 	case player::SLIDE:
 		break;
 	case player::JUMP:
+		m_aniJump->frameUpdate(TIMEMANAGER->getElapsedTime());
+		m_aniLJump->frameUpdate(TIMEMANAGER->getElapsedTime());
+		if (m_bPlayerSee)
+		{
+			if (!m_aniJump->getIsPlaying())
+				m_aniJump->start();
+			m_aniLJump->stop();
+		}
+		else
+		{
+			if (!m_aniLJump->getIsPlaying())
+			{
+				m_aniLJump->start();
+			}
+			m_aniJump->stop();
+		}
+
+
+		if (!m_bIsGround)
+		{
+			m_PlayerState = IDLE;
+		}
+
+
 		break;
 	case player::FALL:
-
 		if (m_bIsGround)
 		{
 			m_PlayerState = IDLE;
 		}
+
+
 		break;
 	case player::JUMPJUMP:
 		break;
@@ -357,6 +387,21 @@ void player::update()
 		break;
 	default:
 		break;
+	}
+
+
+	m_fMapX = (m_fX + ROOMMANAGER->getCurrRoom()->getPosMap().x);
+	m_fMapY = (m_fY + ROOMMANAGER->getCurrRoom()->getPosMap().y);
+
+
+	if (m_bIsGround)
+	{
+		m_nMaxJump = m_fMapY - 200;
+	}
+	else
+	{
+		if (m_PlayerState == JUMPJUMP)
+			m_nMaxDoubleJump= m_fMapY - 200;
 	}
 
 	controller();
@@ -721,10 +766,34 @@ void player::controller()
 			}
 
 
+			if (KEYMANAGER->isOnceKeyDown('Z'))
+			{
+				m_PlayerState = JUMP;
+				m_fY -= ((m_fMapY - m_nMaxJump) / 12) + GRAVITY;
+			}
+
+
+
+
 		}
 		else
 		{
-
+			if (KEYMANAGER->isStayKeyDown('Z'))
+			{
+				if (m_fMapY > m_nMaxJump)
+				{
+					m_fY -= ((m_fMapY - m_nMaxJump) / 12)+GRAVITY;
+				}
+				else
+				{
+					m_PlayerState = FALL;
+				}
+			}
+			if (KEYMANAGER->isOnceKeyUp('Z'))
+			{
+				if (m_PlayerState == JUMP || m_PlayerState == JUMPJUMP)
+					m_PlayerState = FALL;
+			}
 		}
 
 	}
@@ -753,6 +822,17 @@ void player::aniInit()
 	m_aniLMove->init(855, 741, 45, 57);
 	m_aniLMove->setPlayFrame(57, 76, true, true);
 	m_aniLMove->setFPS(10);
+
+	m_aniJump = new animation;
+	m_aniJump->init(855, 741, 45, 57);
+	m_aniJump->setPlayFrame(114, 117, false, false);
+	m_aniJump->setFPS(10);
+
+	m_aniLJump = new animation;
+	m_aniLJump->init(855, 741, 45, 57);
+	m_aniLJump->setPlayFrame(130, 133, true, true);
+	m_aniLJump->setFPS(10);
+
 }
 
 void player::bossRectCollision(RECT collRc, int idx)
